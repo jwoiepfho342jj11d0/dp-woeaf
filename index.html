@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TACTICAL MOBILE C2</title>
+    <style>
+        :root {
+            --bg: #07090f;
+            --panel-bg: rgba(13, 20, 36, 0.95);
+            --border: #1e2d4a;
+            --accent: #4da6ff;
+            --accent-dim: #0a1324;
+            --text: #8ab4f8;
+            --status-ok: #4af626;
+            --font: 'Courier New', Courier, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg);
+            font-family: var(--font);
+            color: var(--accent);
+            overflow-x: hidden;
+            /* Тактична сітка */
+            background-image: 
+                linear-gradient(rgba(77, 166, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(77, 166, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Стартовий екран */
+        #intro-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg);
+            z-index: 100;
+        }
+
+        .start-btn {
+            background: rgba(77, 166, 255, 0.1);
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            padding: 20px 40px;
+            font-size: 1.2rem;
+            font-family: var(--font);
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(77, 166, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .start-btn:active {
+            background: var(--accent);
+            color: var(--bg);
+            transform: scale(0.95);
+        }
+
+        /* Головний дашборд */
+        #dashboard {
+            display: none; /* Приховано до натискання кнопки */
+            width: 100%;
+            height: 100vh;
+            padding: 6px;
+            gap: 6px;
+        }
+
+        /* Адаптація: Вертикальний телефон (1 колонка) */
+        @media (orientation: portrait) {
+            #dashboard {
+                display: none;
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+                height: auto; /* Дозволяє прокрутку */
+                min-height: 100vh;
+            }
+            .module {
+                height: 48vh; /* Кожен блок займає пів екрана у висоту */
+            }
+        }
+
+        /* Адаптація: Альбомна орієнтація / ПК (Сітка 2x2) */
+        @media (orientation: landscape) {
+            #dashboard.active-grid {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 1fr 1fr;
+                height: 100vh;
+                overflow: hidden;
+            }
+            .module {
+                height: 100%;
+            }
+        }
+
+        .module {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .module-header {
+            background: var(--accent-dim);
+            padding: 8px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .status {
+            width: 8px; height: 8px;
+            background-color: var(--status-ok);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--status-ok);
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            flex-grow: 1;
+        }
+
+        .split-panel {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            height: 100%;
+            gap: 2px;
+            background-color: var(--border);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Стартовий екран -->
+    <div id="intro-screen">
+        <button class="start-btn" onclick="enterDashboard()">[ Ініціалізація C2 ]</button>
+    </div>
+
+    <!-- Дашборд -->
+    <div id="dashboard">
+        <!-- Блок 1 -->
+        <div class="module">
+            <div class="module-header">
+                <span>> DIMAP_LIVE</span>
+                <span class="status"></span>
+            </div>
+            <iframe src="https://dimap.live/"></iframe>
+        </div>
+
+        <!-- Блок 2 -->
+        <div class="module">
+            <div class="module-header">
+                <span>> UKRAINE_ALARM</span>
+                <span class="status"></span>
+            </div>
+            <iframe src="https://map.ukrainealarm.com/"></iframe>
+        </div>
+
+        <!-- Блок 3 -->
+        <div class="module">
+            <div class="module-header">
+                <span>> NAHR_MAP</span>
+                <span class="status"></span>
+            </div>
+            <iframe src="https://map.nahr.uk/#50.965,35.728,6"></iframe>
+        </div>
+
+        <!-- Блок 4 (Телеграм) -->
+        <div class="module">
+            <div class="module-header">
+                <span>> TG_COMMS</span>
+                <span class="status"></span>
+            </div>
+            <div class="split-panel">
+                <iframe src="https://t.me/s/povitryanatrivogaaa"></iframe>
+                <iframe src="https://t.me/s/kpszsu"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function enterDashboard() {
+            const elem = document.documentElement;
+            
+            // Запит на повноекранний режим (підтримує різні браузери)
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+
+            // Ховаємо кнопку, показуємо дашборд
+            document.getElementById('intro-screen').style.display = 'none';
+            
+            const dashboard = document.getElementById('dashboard');
+            // Перевіряємо орієнтацію для правильного класу дисплея
+            if (window.matchMedia("(orientation: landscape)").matches) {
+                dashboard.classList.add('active-grid');
+            } else {
+                dashboard.style.display = 'grid';
+            }
+        }
+
+        // Автоматичне перемикання стилів при повороті екрана телефону
+        window.addEventListener("orientationchange", function() {
+            const dashboard = document.getElementById('dashboard');
+            if (dashboard.style.display !== 'none') {
+                if (window.orientation === 90 || window.orientation === -90) {
+                    dashboard.classList.add('active-grid');
+                    dashboard.style.display = '';
+                } else {
+                    dashboard.classList.remove('active-grid');
+                    dashboard.style.display = 'grid';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
